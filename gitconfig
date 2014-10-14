@@ -1,0 +1,23 @@
+[user]
+	email = ilia@nurey.com
+	name = Ilia Lobsanov
+[core]
+	quotepath = false
+	excludesfile = /Users/ilia/.gitignore
+	whitespace = cr-at-eol
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	last = log -1 HEAD
+    po = !git remote prune origin
+    bp = !zsh -c 'git show --oneline $(git merge-base $1 develop)' -
+[color]
+	ui = true
+[push]
+	default = current
+[mergetool]
+	keepBackup = true
+[help]
+	autocorrect = 1
