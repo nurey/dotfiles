@@ -20,4 +20,4 @@
 [mergetool]
 	keepBackup = true
 [help]
-	autocorrect = 1
+	autocorrect = 0

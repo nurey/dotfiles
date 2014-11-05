@@ -74,3 +74,7 @@ export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+
+source ~/.profile
