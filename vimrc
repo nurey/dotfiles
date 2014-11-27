@@ -1,6 +1,8 @@
 " Vincent Foley Bourgon's .vimrc (gnuvince@yahoo.ca)
 " Last change: 2001/07/09
 
+" allow to copy to OS X clipboard
+set clipboard=unnamed
 
 " No compatible.  You want to use Vim, not vi
 set nocp
