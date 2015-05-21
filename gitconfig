@@ -11,8 +11,10 @@
 	ci = commit
 	st = status
 	last = log -1 HEAD
-    po = !git remote prune origin
-    bp = !zsh -c 'git show --oneline $(git merge-base $1 develop)' -
+  po = !git remote prune origin
+  bp = "!zsh -c 'git show --oneline $(git merge-base $1 develop)' -"
+  locate = "!git ls-files | grep -i"
+  q-log    = log --no-merges --graph --pretty=format:'%Cred%h%Creset - %C(green)%aN%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset'
 [color]
 	ui = true
 [push]
@@ -21,3 +23,9 @@
 	keepBackup = true
 [help]
 	autocorrect = 0
+[merge]
+	ff = only
+[filter "media"]
+	required = true
+	clean = git media clean %f
+	smudge = git media smudge %f
