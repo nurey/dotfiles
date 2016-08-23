@@ -7,7 +7,7 @@
 	whitespace = cr-at-eol
 [alias]
 	co = checkout
-	br = branch
+	br = branch --sort=-committerdate
 	ci = commit
 	st = status
 	last = log -1 HEAD
