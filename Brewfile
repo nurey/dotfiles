@@ -2,10 +2,16 @@ cask_args appdir: '/Applications'
 
 tap 'caskroom/homebrew-cask' || true
 brew 'bash-completion'
+brew 'coreutils'
+brew 'dos2unix'
+brew 'fzf'
 brew 'git'
 brew 'htop'
+brew 'hunspell'
 brew 'hub'
+brew 'imagemagick'
 brew 'rbenv'
+brew 'tmux'
 brew 'tree'
 brew 'wget'
 # Casks
