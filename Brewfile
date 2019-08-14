@@ -10,6 +10,7 @@ brew 'htop'
 brew 'hunspell'
 brew 'hub'
 brew 'imagemagick'
+brew 'mas'
 brew 'rbenv'
 brew 'tmux'
 brew 'tree'
@@ -19,7 +20,11 @@ cask 'google-chrome'
 cask 'postman'
 cask 'visual-studio-code'
 
+# App Store
+mas 'Amphetamine', id: 937984704
+
 # client-app dependencies
+brew 'geoip'
 brew 'geos'
 brew 'proj'
 brew 'gdal'
