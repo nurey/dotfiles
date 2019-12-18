@@ -1,11 +1,11 @@
 cask_args appdir: '/Applications'
 
-tap 'caskroom/homebrew-cask' || true
 brew 'bash-completion'
 brew 'coreutils'
 brew 'dos2unix'
 brew 'fzf'
 brew 'git'
+brew 'git-lfs'
 brew 'htop'
 brew 'hunspell'
 brew 'hub'
@@ -17,8 +17,10 @@ brew 'tmux'
 brew 'tree'
 brew 'wget'
 # Casks
+cask 'firefox'
 cask 'google-chrome'
 cask 'postman'
+cask 'slack'
 cask 'visual-studio-code'
 
 # App Store
@@ -31,4 +33,8 @@ brew 'proj'
 brew 'gdal'
 tap 'petere/postgresql'
 brew 'petere/postgresql/postgresql@11'
+brew 'petere/postgresql/postgresql-common'
+
+tap 'thoughtbot/formulae'
+brew 'rcm'
 
