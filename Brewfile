@@ -26,6 +26,7 @@ cask 'google-chrome'
 cask 'iterm2'
 cask 'postman'
 cask 'slack'
+cask 'transmission'
 cask 'visual-studio-code'
 
 # App Store
