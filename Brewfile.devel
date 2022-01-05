@@ -1,0 +1,43 @@
+tap 'homebrew/cask'
+cask_args appdir: '/Applications'
+
+brew 'bash-completion'
+brew 'coreutils'
+brew 'dos2unix'
+brew 'fzf'
+brew 'git'
+brew 'git-lfs'
+brew 'htop'
+brew 'hunspell'
+brew 'imagemagick'
+brew 'jq'
+brew 'mas'
+brew 'postgresql'
+brew 'rbenv'
+brew 'ruby-build'
+brew 'reattach-to-user-namespace'
+brew 'ripgrep'
+brew 'tmux'
+brew 'tree'
+brew 'wget'
+
+# Casks
+cask '1password-cli'
+cask '1password'
+cask 'chromium'
+cask 'docker'
+cask 'iterm2'
+cask 'maccy'
+cask 'ngrok'
+cask 'postman'
+cask 'rectangle'
+cask 'slack'
+cask 'visual-studio-code'
+
+# App Store
+mas 'Amphetamine', id: 937984704
+mas 'Calca', id: 635758264
+mas 'Meeter', id: 1510445899
+
+tap 'thoughtbot/formulae'
+brew 'rcm'
