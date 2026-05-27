@@ -1,0 +1,6 @@
+# Ghostty configuration
+# Docs: https://ghostty.org/docs/config
+# View all options + defaults: `ghostty +show-config --default --docs`
+# Reload while running: Cmd+Shift+, (macOS)
+
+working-directory = inherit
