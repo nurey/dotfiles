@@ -53,7 +53,7 @@
     "ask": [],
     "defaultMode": "default"
   },
-  "model": "sonnet",
+  "model": "claude-fable-5[1m]",
   "statusLine": {
     "type": "command",
     "command": "/bin/bash $HOME/.claude/statusline-command.sh"
