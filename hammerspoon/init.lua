@@ -1,5 +1,12 @@
 hs.logger.defaultLogLevel="info"
 
+require("hs.ipc")
+
+-- macOS 14+ redacts the current SSID unless the calling process holds Location
+-- Services authorization, so hs.wifi.currentNetwork() returns nil without this.
+-- Starting hs.location registers Hammerspoon with locationd and raises the prompt.
+hs.location.start()
+
 hyper       = {"cmd","alt","ctrl"}
 shift_hyper = {"cmd","alt","ctrl","shift"}
 ctrl_cmd    = {"cmd","ctrl"}
@@ -36,3 +43,6 @@ Install:andUse("MenubarFlag",
                  start = true
                }
 )
+
+-- Network Location follows Wi-Fi; see wifi-location.lua.
+require("wifi-location").start()
