@@ -41,6 +41,45 @@ else
   ctx_info=""
 fi
 
+# Agent name: the address other sessions use with SendMessage. Only
+# `claude agents --json` knows it, and that spawns a node process, so the
+# lookup is cached and refreshed in the background rather than per render.
+session_id=$(echo "$input" | jq -r '.session_id // empty')
+name_cache="$HOME/.claude/.agent-names.json"
+name_lock="$HOME/.claude/.agent-names.lock"
+now=$(date +%s)
+
+# Drop a lock left behind by a refresh that died.
+if [ -d "$name_lock" ] && [ $(( now - $(stat -f %m "$name_lock" 2>/dev/null || echo "$now") )) -ge 120 ]; then
+  rmdir "$name_lock" 2>/dev/null
+fi
+
+cache_age=$(( now - $(stat -f %m "$name_cache" 2>/dev/null || echo 0) ))
+if [ "$cache_age" -ge 60 ] && mkdir "$name_lock" 2>/dev/null; then
+  (
+    trap 'rmdir "$name_lock" 2>/dev/null' EXIT
+    tmp="$name_cache.$$"
+    # `claude agents --json` exits nonzero even when it prints good output,
+    # so validate the JSON rather than trusting the exit code.
+    claude agents --json >"$tmp" 2>/dev/null
+    if jq -e 'type == "array"' "$tmp" >/dev/null 2>&1; then
+      mv "$tmp" "$name_cache"
+    else
+      rm -f "$tmp"
+    fi
+  ) >/dev/null 2>&1 &
+fi
+
+agent_name=""
+if [ -n "$session_id" ] && [ -f "$name_cache" ]; then
+  agent_name=$(jq -r --arg sid "$session_id" \
+    '.[] | select(.sessionId == $sid) | .name // empty' "$name_cache" 2>/dev/null | head -1)
+fi
+
+# Fall back to a short session-id prefix until the cache is warm.
+session_label="${agent_name:-${session_id:0:8}}"
+session_info="${session_label:+ \033[2m[$session_label]\033[0m}"
+
 # Build the prompt (using printf for color codes)
-# Green arrow + cyan directory + blue git info + context usage
-printf "\033[1;32m➜\033[0m  \033[36m%s\033[0m\033[1;34m%s\033[0m%b" "$dir_name" "$git_info" "$ctx_info"
+# Green arrow + cyan directory + blue git info + context usage + dim agent name
+printf "\033[1;32m➜\033[0m  \033[36m%s\033[0m\033[1;34m%s\033[0m%b%b" "$dir_name" "$git_info" "$ctx_info" "$session_info"
