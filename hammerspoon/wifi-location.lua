@@ -10,6 +10,9 @@
 --
 -- The home SSID lives in ~/.hammerspoon/wifi-location.local.lua, deliberately
 -- outside this public repo.
+--
+-- Locations are system-wide, so on logout, shutdown, or fast-user-switching away
+-- it drops back to "Automatic"; other accounts on the machine never inherit Home.
 
 local M = {}
 
@@ -25,6 +28,8 @@ local lastSwitch = 0
 local nilSince   = nil
 local retries    = {}
 local homeNet    = nil
+local paused     = false  -- true while our session is inactive or logging out
+local resumer    = nil
 
 local function currentLocation()
   return (hs.execute(NETSETUP .. " -getcurrentlocation") or ""):gsub("%s+$", "")
@@ -54,8 +59,22 @@ local function desiredLocation()
   return nil
 end
 
+local function switchTo(want, cur, notify)
+  lastSwitch = os.time()
+  local _, ok = hs.execute("sudo -n " .. NETSETUP .. " -switchtolocation " .. want)
+  if ok then
+    log.f("network location %s -> %s", cur, want)
+    if notify then
+      hs.notify.new({ title = "Network location",
+                      informativeText = cur .. " → " .. want }):send()
+    end
+  else
+    log.ef("switch %s -> %s failed; check /etc/sudoers.d/wifi-location", cur, want)
+  end
+end
+
 local function reconcile()
-  if not homeNet then return end
+  if not homeNet or paused then return end
 
   local want = desiredLocation()
   if not want then return end
@@ -70,14 +89,18 @@ local function reconcile()
     return
   end
 
-  lastSwitch = os.time()
-  local _, ok = hs.execute("sudo -n " .. NETSETUP .. " -switchtolocation " .. want)
-  if ok then
-    log.f("network location %s -> %s", cur, want)
-    hs.notify.new({ title = "Network location",
-                    informativeText = cur .. " → " .. want }):send()
-  else
-    log.ef("switch %s -> %s failed; check /etc/sudoers.d/wifi-location", cur, want)
+  switchTo(want, cur, true)
+end
+
+-- Locations are system-wide, so hand the machine back on "Automatic" whenever
+-- this session stops being the one in front: other users must not inherit Home.
+-- Bypasses the cooldown, and pauses reconcile() so the poll can't flip it back.
+local function relinquish(why)
+  paused = true
+  local cur = currentLocation()
+  if cur ~= AWAY_LOCATION then
+    log.f("%s: relinquishing %s", why, cur)
+    switchTo(AWAY_LOCATION, cur, false)
   end
 end
 
@@ -114,6 +137,25 @@ function M.start()
                              :watchingFor({ "SSIDChange", "powerChange", "linkChange" })
                              :start()
 
+  -- systemWillPowerOff fires on logout as well as shutdown/restart (not on a
+  -- Hammerspoon reload). If the logout is cancelled we are still alive a minute
+  -- later, so resume. Fast user switching keeps this process running in the
+  -- background, hence pausing for the whole time the session is inactive.
+  local cw = hs.caffeinate.watcher
+  M.session = cw.new(function(event)
+    if event == cw.systemWillPowerOff then
+      relinquish("logout/shutdown")
+      if resumer then resumer:stop() end
+      resumer = hs.timer.doAfter(60, function() paused = false ; reconcileSoon() end)
+    elseif event == cw.sessionDidResignActive then
+      if resumer then resumer:stop() ; resumer = nil end
+      relinquish("session switched away")
+    elseif event == cw.sessionDidBecomeActive then
+      paused = false
+      reconcileSoon()
+    end
+  end):start()
+
   reconcileSoon()                             -- converge at load, not only on events
   M.timer = hs.timer.doEvery(POLL, reconcile)  -- retained on M so it isn't collected
   return M
@@ -122,6 +164,8 @@ end
 function M.stop()
   if M.watcher then M.watcher:stop() ; M.watcher = nil end
   if M.timer then M.timer:stop() ; M.timer = nil end
+  if M.session then M.session:stop() ; M.session = nil end
+  if resumer then resumer:stop() ; resumer = nil end
   return M
 end
 
