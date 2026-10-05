@@ -46,3 +46,7 @@ Install:andUse("MenubarFlag",
 
 -- Network Location follows Wi-Fi; see wifi-location.lua.
 require("wifi-location").start()
+
+-- Manual Wi-Fi DNS toggle (Pi-hole <-> DHCP); see pihole_dns.lua.
+-- Disabled: wifi-location manages DNS via the Home Location.
+-- require("pihole_dns")
