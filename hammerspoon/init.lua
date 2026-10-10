@@ -50,3 +50,6 @@ require("wifi-location").start()
 -- Manual Wi-Fi DNS toggle (Pi-hole <-> DHCP); see pihole_dns.lua.
 -- Disabled: wifi-location manages DNS via the Home Location.
 -- require("pihole_dns")
+
+-- Claude usage limits in the menu bar; see claudeusage.lua.
+claudeUsage = require("claudeusage").start()
