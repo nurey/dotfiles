@@ -18,7 +18,9 @@ brew 'postgresql'
 brew 'pspg'
 brew 'rbenv'
 brew 'ruby-build'
+brew 'rustup'  # keg-only, on PATH via ~/.zshrc; Rust lets ruby-build compile YJIT/ZJIT. Update with `rustup update`, not brew.
 brew 'reattach-to-user-namespace'
+brew 'rcm'
 brew 'ripgrep'
 brew 'tig'
 brew 'tmux'
@@ -28,13 +30,13 @@ brew 'wget'
 # Casks
 cask '1password-cli'
 cask '1password'
+cask 'bruno'
 cask 'google-chrome'
 cask 'dbeaver-community'
-cask 'docker'
-cask 'iterm2'
+cask 'ghostty'
 cask 'maccy'
 cask 'ngrok'
-cask 'postman'
+cask 'orbstack'
 cask 'rectangle'
 cask 'slack'
 cask 'visual-studio-code'
@@ -43,6 +45,3 @@ cask 'visual-studio-code'
 mas 'Amphetamine', id: 937984704
 mas 'Calca', id: 635758264
 mas 'Meeter', id: 1510445899
-
-tap 'thoughtbot/formulae'
-brew 'rcm'
