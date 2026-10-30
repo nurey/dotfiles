@@ -3,7 +3,7 @@
 	name = Ilia Lobsanov
 [core]
 	quotepath = false
-	excludesfile = /Users/ilia/.gitignore
+	excludesfile = ~/.gitignore_global
 	whitespace = cr-at-eol
 [alias]
 	co = checkout
