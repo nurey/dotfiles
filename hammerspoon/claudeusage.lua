@@ -250,7 +250,9 @@ local function render()
     end
   end
 
-  -- Monthly spend: amounts are in minor units; `decimal_places` says how many.
+  -- Pro/Max report usage windows and treat spend as overage ("extra usage");
+  -- Enterprise reports no windows, so spend is the whole budget.
+  -- Amounts are in minor units; `decimal_places` says how many.
   -- Verified OAuth payload uses `monthly_limit` (not `monthly_credit_limit`).
   if type(raw.extra_usage) == "table" then
     local e = raw.extra_usage
@@ -258,12 +260,13 @@ local function render()
     local limit = e.monthly_credit_limit or e.monthly_limit or e.limit_cents
     local divisor = 10 ^ (type(e.decimal_places) == "number" and e.decimal_places or 2)
     local symbol = (e.currency == "EUR" and "€") or "$"
+    local spendLabel = (session or weekly) and "Extra usage" or "Monthly spend"
     if e.is_enabled ~= false
         and type(used) == "number" and type(limit) == "number" and limit > 0 then
       table.insert(menu, {
         title = hs.styledtext.new(
           string.format("%-14s %s%.2f of %s%.2f",
-            "Monthly spend", symbol, used / divisor, symbol, limit / divisor),
+            spendLabel, symbol, used / divisor, symbol, limit / divisor),
           { font = { name = "Menlo", size = 12 } }
         ),
         disabled = true,
