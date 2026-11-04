@@ -26,7 +26,16 @@ local raw, err = nil, nil
 local function readCredentialBlob()
   -- macOS: Claude Code stores creds in the login Keychain.
   -- First run will prompt for access; choose "Always Allow".
-  local out = hs.execute(
+  -- Claude Code can leave a second item (acct "unknown", mcpOAuth only) under
+  -- the same service; the real token lives in the item keyed by $USER.
+  local user = os.getenv("USER") or ""
+  local out = hs.execute(string.format(
+    [[security find-generic-password -s "Claude Code-credentials" -a %q -w 2>/dev/null]],
+    user
+  ))
+  if out and out ~= "" and out:find("claudeAiOauth", 1, true) then return out end
+
+  out = hs.execute(
     [[security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null]]
   )
   if out and out ~= "" then return out end
@@ -204,6 +213,11 @@ local function render()
   local session = pct(raw.five_hour)
   local weekly = pct(raw.seven_day)
   local headline = math.max(session or 0, weekly or 0)
+  -- Enterprise seats have no session/weekly windows, only a monthly spend cap.
+  if not session and not weekly and type(raw.extra_usage) == "table"
+      and type(raw.extra_usage.utilization) == "number" then
+    headline = math.floor(raw.extra_usage.utilization + 0.5)
+  end
   local color = colorFor(headline)
 
   bar:setIcon(claudeIcon(color), false)
@@ -236,7 +250,7 @@ local function render()
     end
   end
 
-  -- Extra usage: amounts are in minor units; `decimal_places` says how many.
+  -- Monthly spend: amounts are in minor units; `decimal_places` says how many.
   -- Verified OAuth payload uses `monthly_limit` (not `monthly_credit_limit`).
   if type(raw.extra_usage) == "table" then
     local e = raw.extra_usage
@@ -249,7 +263,7 @@ local function render()
       table.insert(menu, {
         title = hs.styledtext.new(
           string.format("%-14s %s%.2f of %s%.2f",
-            "Extra usage", symbol, used / divisor, symbol, limit / divisor),
+            "Monthly spend", symbol, used / divisor, symbol, limit / divisor),
           { font = { name = "Menlo", size = 12 } }
         ),
         disabled = true,
