@@ -4,3 +4,4 @@
 # Reload while running: Cmd+Shift+, (macOS)
 
 working-directory = inherit
+auto-update = off
