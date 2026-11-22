@@ -5,3 +5,5 @@
 
 working-directory = inherit
 auto-update = off
+# Install Ghostty terminfo on SSH hosts and fall back to xterm-256color
+shell-integration-features = ssh-terminfo,ssh-env
